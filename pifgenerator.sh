@@ -294,7 +294,7 @@ if [ "$AUTO_SPOOF" -eq 0 ]; then
         printf "\n${Y}[*] Edit spoof settings (ketik 1/0, enter = pakai nilai saat ini)${N}\n\n"
         for config in spoofBuild spoofProps spoofProvider spoofSignature spoofVendingFinger spoofVendingSdk; do
             _cur=$(eval echo "\$$config")
-            printf "  ${W}%s${N} ["; _spoof_color "$_cur"; printf "]: "
+            printf "  ${W}%-20s${N} [" "$config"; _spoof_color "$_cur"; printf "]: "
             read -r _new
             if [ "$_new" = "1" ] || [ "$_new" = "0" ]; then
                 eval "$config=$_new"
