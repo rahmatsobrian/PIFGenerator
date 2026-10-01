@@ -1,6 +1,6 @@
 const { renderIndex } = require('./_lib');
 
-// Melayani halaman utama dengan meta tag dinamis (di Vercel: rewrite "/" -> /api/index)
+// Melayani halaman utama dengan meta tag dinamis (di Vercel: rewrite "/" -> /api/page)
 module.exports = (req, res) => {
   try {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
