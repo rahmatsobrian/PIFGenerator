@@ -4,10 +4,11 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
+const { renderIndex } = require('./api/_lib');
 
 const PORT = process.env.PORT || 3000;
 const PUB = path.join(__dirname, 'public');
-const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.png': 'image/png', '.jpg': 'image/jpeg', '.webmanifest': 'application/manifest+json', '.txt': 'text/plain; charset=utf-8' };
 
 http.createServer(async (req, res) => {
   const u = new URL(req.url, 'http://localhost');
@@ -19,6 +20,11 @@ http.createServer(async (req, res) => {
     res.status = (c) => { res.statusCode = c; return res; };
     res.json = (o) => { res.setHeader('Content-Type', 'application/json'); res.end(JSON.stringify(o)); };
     return require(file)(req, res);
+  }
+  if (u.pathname === '/' || u.pathname === '/index.html') {
+    req.query = Object.fromEntries(u.searchParams);
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.end(renderIndex(req));
   }
   let p = path.join(PUB, u.pathname === '/' ? 'index.html' : u.pathname);
   if (!p.startsWith(PUB) || !fs.existsSync(p) || fs.statSync(p).isDirectory()) { res.statusCode = 404; return res.end('Not found'); }

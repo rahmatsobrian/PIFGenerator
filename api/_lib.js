@@ -53,4 +53,36 @@ async function get(url, headers = {}, lang = 'en') {
   throw last;
 }
 
-module.exports = { get, msg, getLang };
+// Render views/index.html dengan meta tag (Open Graph / Twitter) berisi URL absolut
+// sesuai domain yang dipakai, supaya preview link di Telegram dkk selalu benar.
+const fs = require('fs');
+const path = require('path');
+const META = {
+  en: {
+    lang: 'en', locale: 'en_US',
+    title: 'PIF Generator: Play Integrity Fix for Pixel Canary',
+    desc: 'Generate Play Integrity Fix (pif.prop / pif.json) from the latest Pixel Canary build. Fast, free, right in your browser.',
+  },
+  id: {
+    lang: 'id', locale: 'id_ID',
+    title: 'PIF Generator: Play Integrity Fix untuk Pixel Canary',
+    desc: 'Buat Play Integrity Fix (pif.prop / pif.json) dari build Pixel Canary terbaru dengan mudah, langsung dari browser.',
+  },
+};
+const esc = (x) => String(x).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+let tpl;
+function renderIndex(req) {
+  tpl = tpl || fs.readFileSync(path.join(__dirname, '..', 'views', 'index.html'), 'utf8');
+  const h = req.headers || {};
+  let host = String(h['x-forwarded-host'] || h.host || 'localhost').split(',')[0].trim();
+  if (!/^[a-z0-9.\-:]+$/i.test(host)) host = 'localhost';
+  const local = /^(localhost|127\.|192\.168\.|10\.)/.test(host);
+  const proto = String(h['x-forwarded-proto'] || (local ? 'http' : 'https')).split(',')[0].trim();
+  const origin = `${proto === 'http' ? 'http' : 'https'}://${host}`;
+  const lang = getLang(req);
+  const m = META[lang];
+  const vars = { LANG: m.lang, LOCALE: m.locale, TITLE: m.title, DESC: m.desc, ORIGIN: origin, URL: origin + (lang === 'id' ? '/?lang=id' : '/') };
+  return tpl.replace(/\{\{(\w+)\}\}/g, (_, k) => esc(vars[k] ?? ''));
+}
+
+module.exports = { get, msg, getLang, renderIndex };
