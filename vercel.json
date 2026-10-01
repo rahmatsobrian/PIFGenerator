@@ -1,10 +1,9 @@
 {
   "functions": {
-    "api/*.js": { "maxDuration": 60 },
-    "api/index.js": { "includeFiles": "views/**" }
+    "api/*.js": { "maxDuration": 60, "includeFiles": "views/**" }
   },
   "rewrites": [
-    { "source": "/", "destination": "/api/index" },
-    { "source": "/index.html", "destination": "/api/index" }
+    { "source": "/", "destination": "/api/page" },
+    { "source": "/index.html", "destination": "/api/page" }
   ]
 }
