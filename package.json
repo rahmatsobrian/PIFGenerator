@@ -1,0 +1,11 @@
+{
+  "name": "pif-generator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AutoPIF web: generator pif.prop / pif.json Pixel Canary",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": { "node": ">=18" }
+}
